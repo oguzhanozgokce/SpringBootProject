@@ -38,3 +38,10 @@ out/
 
 ### Kotlin ###
 .kotlin
+
+### Logs ###
+logs/
+*.log
+
+### Database ###
+data/

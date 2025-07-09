@@ -10,5 +10,9 @@ interface UserService {
     fun findByEmail(email: String): User?
     fun existsByUsername(username: String): Boolean
     fun existsByEmail(email: String): Boolean
-    fun getUserById(id: Long): User?
+    fun getUserById(id: Long): UserResponse?
+    fun deleteUser(id: Long): Boolean
+    fun getCurrentUser(username: String): UserResponse?
+    fun getAllUsers(page: Int, size: Int): List<UserResponse>
+    fun updateUserRole(id: Long, role: String): UserResponse?
 }

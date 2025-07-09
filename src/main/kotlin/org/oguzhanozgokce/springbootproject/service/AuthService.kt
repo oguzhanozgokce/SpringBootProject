@@ -57,4 +57,31 @@ class AuthService(
             user = userResponse
         )
     }
+
+    fun refreshToken(oldToken: String): AuthResponse {
+        val username = jwtUtil.extractUsername(oldToken)
+            ?: throw IllegalArgumentException("Invalid token")
+
+        val user = userService.findByUsername(username)
+            ?: throw IllegalArgumentException("User not found")
+
+        if (!jwtUtil.validateToken(oldToken, user)) {
+            throw IllegalArgumentException("Invalid or expired token")
+        }
+
+        val newToken = jwtUtil.generateToken(user)
+        val userResponse = UserResponse(
+            id = user.id,
+            username = user.username,
+            email = user.email,
+            firstName = user.firstName,
+            lastName = user.lastName,
+            role = user.role.name
+        )
+
+        return AuthResponse(
+            token = newToken,
+            user = userResponse
+        )
+    }
 }

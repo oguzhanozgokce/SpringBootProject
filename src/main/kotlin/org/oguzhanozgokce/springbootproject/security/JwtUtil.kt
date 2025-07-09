@@ -36,12 +36,20 @@ class JwtUtil {
             .compact()
     }
 
-    fun extractUsername(token: String): String {
-        return extractClaim(token, Claims::getSubject)
+    fun extractUsername(token: String): String? {
+        return try {
+            extractClaim(token, Claims::getSubject)
+        } catch (e: Exception) {
+            null
+        }
     }
 
-    fun extractExpiration(token: String): Date {
-        return extractClaim(token, Claims::getExpiration)
+    fun extractExpiration(token: String): Date? {
+        return try {
+            extractClaim(token, Claims::getExpiration)
+        } catch (e: Exception) {
+            null
+        }
     }
 
     fun <T> extractClaim(token: String, claimsResolver: (Claims) -> T): T {
@@ -58,11 +66,16 @@ class JwtUtil {
     }
 
     fun isTokenExpired(token: String): Boolean {
-        return extractExpiration(token).before(Date())
+        val expiration = extractExpiration(token)
+        return expiration?.before(Date()) ?: true
     }
 
     fun validateToken(token: String, userDetails: UserDetails): Boolean {
-        val username = extractUsername(token)
-        return username == userDetails.username && !isTokenExpired(token)
+        return try {
+            val username = extractUsername(token)
+            username == userDetails.username && !isTokenExpired(token)
+        } catch (e: Exception) {
+            false
+        }
     }
 }
