@@ -10,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping("/api/users")
@@ -157,6 +158,73 @@ class UserController(
             }
         } catch (e: Exception) {
             logger.error("Error deleting user with ID: $id", e)
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                ApiResponse(
+                    success = false,
+                    message = "Internal server error occurred",
+                    data = null
+                )
+            )
+        }
+    }
+
+    @PostMapping("/profile/image")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    fun updateProfileImage(
+        @RequestParam("image") file: MultipartFile
+    ): ResponseEntity<ApiResponse<UserResponse>> {
+        return try {
+            val authentication: Authentication = SecurityContextHolder.getContext().authentication
+            val username = authentication.name
+
+            logger.info("User $username uploading profile image")
+
+            val currentUser = userService.getCurrentUser(username)
+            if (currentUser == null) {
+                logger.warn("User not found during image upload: $username")
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    ApiResponse(
+                        success = false,
+                        message = "User not found",
+                        data = null
+                    )
+                )
+            }
+
+            val updatedUser = userService.updateUserProfileImage(currentUser.id, file)
+
+            if (updatedUser != null) {
+                logger.info("Profile image updated successfully for user: $username")
+                ResponseEntity.ok(
+                    ApiResponse(
+                        success = true,
+                        message = "Profile image updated successfully",
+                        data = updatedUser
+                    )
+                )
+            } else {
+                logger.error("Failed to update profile image for user: $username")
+                ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    ApiResponse(
+                        success = false,
+                        message = "Failed to update profile image",
+                        data = null
+                    )
+                )
+            }
+
+        } catch (e: IllegalArgumentException) {
+            logger.warn("Invalid file upload: ${e.message}")
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                ApiResponse(
+                    success = false,
+                    message = e.message ?: "Invalid file",
+                    data = null
+                )
+            )
+        }
+        catch (e: Exception) {
+            logger.error("Error uploading profile image", e)
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                 ApiResponse(
                     success = false,

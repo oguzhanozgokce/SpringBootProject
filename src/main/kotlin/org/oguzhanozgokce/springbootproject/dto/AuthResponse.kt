@@ -12,7 +12,8 @@ data class UserResponse(
     val email: String,
     val firstName: String,
     val lastName: String,
-    val role: String
+    val role: String,
+    val profileImageUrl: String? = null
 )
 
 data class ApiResponse<T>(

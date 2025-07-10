@@ -45,3 +45,6 @@ logs/
 
 ### Database ###
 data/
+
+### Uploaded Files ###
+src/main/resources/static/uploads/

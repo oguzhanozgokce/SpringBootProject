@@ -3,6 +3,7 @@ package org.oguzhanozgokce.springbootproject.service
 import org.oguzhanozgokce.springbootproject.dto.RegisterRequest
 import org.oguzhanozgokce.springbootproject.dto.UserResponse
 import org.oguzhanozgokce.springbootproject.model.User
+import org.springframework.web.multipart.MultipartFile
 
 interface UserService {
     fun registerUser(registerRequest: RegisterRequest): UserResponse
@@ -15,4 +16,5 @@ interface UserService {
     fun getCurrentUser(username: String): UserResponse?
     fun getAllUsers(page: Int, size: Int): List<UserResponse>
     fun updateUserRole(id: Long, role: String): UserResponse?
+    fun updateUserProfileImage(userId: Long, file: MultipartFile): UserResponse?
 }

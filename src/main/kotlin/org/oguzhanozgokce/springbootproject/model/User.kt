@@ -48,7 +48,10 @@ class User(
     val createdAt: LocalDateTime = LocalDateTime.now(),
 
     @Column(nullable = false)
-    val updatedAt: LocalDateTime = LocalDateTime.now()
+    val updatedAt: LocalDateTime = LocalDateTime.now(),
+
+    @Column(nullable = true)
+    val profileImageUrl: String? = null
 ) : UserDetails {
 
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {

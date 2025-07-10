@@ -41,6 +41,7 @@ class SecurityConfig(
                     .requestMatchers("/api/auth/**").permitAll()
                     .requestMatchers("/h2-console/**").permitAll()
                     .requestMatchers("/actuator/health").permitAll()
+                    .requestMatchers("/uploads/**").permitAll()
                     .requestMatchers("/error").permitAll()
                     .anyRequest().authenticated()
             }
