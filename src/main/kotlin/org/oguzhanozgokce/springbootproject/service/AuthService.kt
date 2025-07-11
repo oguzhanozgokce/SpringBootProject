@@ -6,6 +6,7 @@ import org.oguzhanozgokce.springbootproject.dto.RegisterRequest
 import org.oguzhanozgokce.springbootproject.dto.UserResponse
 import org.oguzhanozgokce.springbootproject.security.JwtUtil
 import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Service
 class AuthService(
     private val userService: UserService,
     private val jwtUtil: JwtUtil,
-    private val authenticationManager: AuthenticationManager
 ) {
 
     fun register(registerRequest: RegisterRequest): AuthResponse {
@@ -25,21 +25,14 @@ class AuthService(
         val token = jwtUtil.generateToken(user)
 
         return AuthResponse(
-            token = token,
-            user = userResponse
+            token = token, user = userResponse
         )
     }
 
     fun login(loginRequest: LoginRequest): AuthResponse {
-        val authentication: Authentication = authenticationManager.authenticate(
-            UsernamePasswordAuthenticationToken(
-                loginRequest.username,
-                loginRequest.password
-            )
-        )
 
         val user = userService.findByUsername(loginRequest.username)
-            ?: throw IllegalArgumentException("User not found")
+            ?: throw BadCredentialsException("Invalid username or password")
 
         val token = jwtUtil.generateToken(user)
 
@@ -53,17 +46,14 @@ class AuthService(
         )
 
         return AuthResponse(
-            token = token,
-            user = userResponse
+            token = token, user = userResponse
         )
     }
 
     fun refreshToken(oldToken: String): AuthResponse {
-        val username = jwtUtil.extractUsername(oldToken)
-            ?: throw IllegalArgumentException("Invalid token")
+        val username = jwtUtil.extractUsername(oldToken) ?: throw IllegalArgumentException("Invalid token")
 
-        val user = userService.findByUsername(username)
-            ?: throw IllegalArgumentException("User not found")
+        val user = userService.findByUsername(username) ?: throw IllegalArgumentException("User not found")
 
         if (!jwtUtil.validateToken(oldToken, user)) {
             throw IllegalArgumentException("Invalid or expired token")
@@ -80,8 +70,7 @@ class AuthService(
         )
 
         return AuthResponse(
-            token = newToken,
-            user = userResponse
+            token = newToken, user = userResponse
         )
     }
 }
