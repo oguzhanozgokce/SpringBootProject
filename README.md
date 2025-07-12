@@ -91,12 +91,12 @@ class SpringBootProjectApplicationTests {
 
 ```kotlin
 // Authentication logs
-logger.info("Login attempt for user: ${username}")
-logger.info("User registered successfully: ${username}")
-logger.warn("Registration validation failed: ${errors}")
+logger.info("Login attempt for user: $username")
+logger.info("User registered successfully: $username")
+logger.warn("Registration validation failed: $errors")
 
 // Security logs
-logger.warn("Invalid credentials for user: ${username}")
+logger.warn("Invalid credentials for user: $username")
 logger.error("Unexpected error during login", exception)
 ```
 
@@ -242,15 +242,15 @@ Authorization: Bearer <your-jwt-token>
 
 ### Register Request:
 
-- **username**: 3-20 characters, not empty
+- **username**: 3--20 characters, not empty
 - **email**: Valid email format, not empty
 - **password**: Minimum 6 characters, not empty
-- **firstName**: 2-50 characters, not empty
-- **lastName**: 2-50 characters, not empty
+- **firstName**: 2--50 characters, not empty
+- **lastName**: 2--50 characters, not empty
 
 ### Login Request:
 
-- **username**: 3-20 characters, not empty
+- **username**: 3--20 characters, not empty
 - **password**: Minimum 6 characters, not empty
 
 ## Security Features
